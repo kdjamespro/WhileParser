@@ -13,10 +13,6 @@ public class Practice
 //        {
 //            System.out.println(s.lexemes.get(i) + " -> " + s.tokens.get(i));
 //        }
-        SyntaxAnalyzer n = new SyntaxAnalyzer("test1.txt");
-        while(((1 + 2) * 3 > 3))
-        {
-            
-        }
+        SyntaxAnalyzer n = new SyntaxAnalyzer("test2.txt");
     }
 }

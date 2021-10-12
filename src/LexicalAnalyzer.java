@@ -9,18 +9,17 @@ import java.util.stream.Collectors;
 
 public class LexicalAnalyzer
 {
-    public int lineNumber;
-    public ArrayList<String> tokens;
-    public ArrayList<String> lexemes;
-    public SymbolTable symbols = new SymbolTable();
-    private VariableTable var = new VariableTable();
+    private int lineNumber;
+    private final ArrayList<String> tokens;
+    private final ArrayList<String> lexemes;
+    private final SymbolTable symbols = new SymbolTable();
+    private final VariableTable var = new VariableTable();
     private int num;
 
     public LexicalAnalyzer(String fileName)
     {
         lexemes = new ArrayList<>();
         tokens = new ArrayList<>();
-        lineNumber = 0;
         num = 0;
         try(BufferedReader read = new BufferedReader(new FileReader(new File(fileName))))
         {
@@ -29,7 +28,7 @@ public class LexicalAnalyzer
             while((line = read.readLine().trim()) != null)
             {
                 lineNumber += 1;
-                List<String> s = Collections.list(new StringTokenizer(line, " \n[(+-*/%=;&|.)", true)).stream()
+                List<String> s = Collections.list(new StringTokenizer(line, " \n[(+-*/%=;&|.!)", true)).stream()
                         .map(token -> (String) token).collect(Collectors.toList());
 
                 for(int i = 0; i < s.size(); i++)
@@ -113,18 +112,6 @@ public class LexicalAnalyzer
                         {
                             throw new SyntaxErrorException("Line " + lineNumber + ": "+ "Unclosed quotation mark (\")");
                         }
-                    }
-                    else if(isBooleanOperator(lexeme))
-                    {
-                        tokens.add("boolean operator");
-                    }
-                    else if(isLogicalOperator(lexeme))
-                    {
-                        tokens.add("logical operator");
-                    }
-                    else if(isNumericalOperator(lexeme))
-                    {
-                        tokens.add("numerical operator");
                     }
                     else if (isIdentifier(lexeme))
                     {

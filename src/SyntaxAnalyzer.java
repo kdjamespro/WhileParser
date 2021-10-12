@@ -14,15 +14,32 @@ public class SyntaxAnalyzer
     {
         match("while");
         match("(");
-        compileBooleanExpression();
+        compileCondition();
         match(")");
     }
 
-    private void compileBooleanExpression() throws SyntaxErrorException
+    private void compileCondition() throws SyntaxErrorException
     {
         if(lex.currentLexeme().equals("!"))
         {
-            compileBooleanExpression();
+            lex.next();
+            if(lex.getTokenType().equals("boolean"))
+            {
+                lex.next();
+            }
+            else
+            {
+                if(lex.currentLexeme().equals("("))
+                {
+                    lex.next();
+                    compileBooleanExpression();
+                    match(")");
+                }
+                else
+                {
+                    throw new SyntaxErrorException("Cannot apply ! operator to " + lex.getTokenType());
+                }
+            }
         }
         else if(lex.getTokenType().equals("boolean"))
         {
@@ -30,28 +47,47 @@ public class SyntaxAnalyzer
         }
         else
         {
-            compileExpression();
-//            if(lex.currentLexeme().equals(")"))
-//            {
-//                throw new SyntaxErrorException("This expression does not evaluate to boolean");
-//            }
-            if(!lex.getTokenType().equals("boolean operator"))
+            if(lex.currentLexeme().equals("("))
             {
-                throw new SyntaxErrorException("Expected a boolean operator but got " + lex.currentLexeme());
+                lex.next();
+                compileBooleanExpression();
+                match(")");
             }
-            lex.next();
-            compileExpression();
+            else
+            {
+                compileBooleanExpression();
+            }
         }
-
         if(lex.getTokenType().equals("logical operator"))
         {
             lex.next();
-            compileBooleanExpression();
+            compileCondition();
         }
+    }
+
+    private void compileBooleanExpression() throws SyntaxErrorException
+    {
+        compileExpression();
+            if(lex.currentLexeme().equals(")"))
+            {
+                throw new SyntaxErrorException("This expression does not evaluate to boolean");
+            }
+        if(!lex.getTokenType().equals("boolean operator"))
+        {
+            throw new SyntaxErrorException("Expected a boolean operator but got " + lex.currentLexeme());
+        }
+        lex.next();
+        compileExpression();
     }
 
     private void compileExpression() throws SyntaxErrorException
     {
+//        if(lex.currentLexeme().equals("("))
+//        {
+//            lex.next();
+//            compileExpression();
+//            match(")");
+//        }
         compileTerm();
         while(lex.getTokenType().equals("numerical operator"))
         {
@@ -74,7 +110,6 @@ public class SyntaxAnalyzer
             compileExpression();
             match(")");
         }
-
     }
 
 

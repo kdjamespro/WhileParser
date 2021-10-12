@@ -9,6 +9,7 @@ public class SymbolTable
         symbolTable = new HashMap<>();
         addKeywords();
         addSymbols();
+        addOperators();
     }
 
     private void addOperators()
@@ -29,6 +30,11 @@ public class SymbolTable
         symbolTable.put(">=", "boolean operator");
         symbolTable.put("<", "boolean operator");
         symbolTable.put("<=", "boolean operator");
+        symbolTable.put("!", "boolean operator");
+        symbolTable.put("|", "logical operator");
+        symbolTable.put("||", "logical operator");
+        symbolTable.put("&", "logical operator");
+        symbolTable.put("&&", "logical operator");
     }
 
     private void addKeywords()
