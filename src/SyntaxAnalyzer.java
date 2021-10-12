@@ -41,21 +41,12 @@ public class SyntaxAnalyzer
                 }
             }
         }
-        else if(lex.getTokenType().equals("boolean"))
-        {
-            lex.next();
-        }
         else
         {
-            if(lex.currentLexeme().equals("("))
+            boolean isCondition = compileExpression();
+            if(!isCondition)
             {
-                lex.next();
-                compileBooleanExpression();
-                match(")");
-            }
-            else
-            {
-                compileBooleanExpression();
+                throw new SyntaxErrorException("This expression does not evaluate to boolean value");
             }
         }
         if(lex.getTokenType().equals("logical operator"))
@@ -68,10 +59,10 @@ public class SyntaxAnalyzer
     private void compileBooleanExpression() throws SyntaxErrorException
     {
         compileExpression();
-            if(lex.currentLexeme().equals(")"))
-            {
-                throw new SyntaxErrorException("This expression does not evaluate to boolean");
-            }
+        if(lex.currentLexeme().equals(")"))
+        {
+            throw new SyntaxErrorException("This expression does not evaluate to boolean");
+        }
         if(!lex.getTokenType().equals("boolean operator"))
         {
             throw new SyntaxErrorException("Expected a boolean operator but got " + lex.currentLexeme());
@@ -80,24 +71,28 @@ public class SyntaxAnalyzer
         compileExpression();
     }
 
-    private void compileExpression() throws SyntaxErrorException
+    private boolean compileExpression() throws SyntaxErrorException
     {
-//        if(lex.currentLexeme().equals("("))
-//        {
-//            lex.next();
-//            compileExpression();
-//            match(")");
-//        }
-        compileTerm();
-        while(lex.getTokenType().equals("numerical operator"))
+        boolean isBoolean = compileTerm();
+        while(lex.getTokenType().equals("numerical operator") || lex.getTokenType().equals("boolean operator"))
         {
+            if(!isBoolean && lex.getTokenType().equals("boolean operator"))
+            {
+                isBoolean = true;
+            }
+            else if(isBoolean && lex.getTokenType().equals("boolean operator"))
+            {
+                throw new SyntaxErrorException("The operator " + lex.currentLexeme() + " cannot be applied to the expression");
+            }
             lex.next();
             compileTerm();
         }
+        return isBoolean;
     }
 
-    private void compileTerm() throws SyntaxErrorException
+    private boolean compileTerm() throws SyntaxErrorException
     {
+        boolean truthy = false;
         String type = lex.getTokenType();
 
         if(type.equals("int") || type.equals("char") || type.equals("double"))
@@ -107,11 +102,16 @@ public class SyntaxAnalyzer
         else if(lex.currentLexeme().equals("("))
         {
             lex.next();
-            compileExpression();
+            truthy = compileExpression();
             match(")");
         }
+        else if(lex.getTokenType().equals("boolean"))
+        {
+            lex.next();
+            truthy = true;
+        }
+        return  truthy;
     }
-
 
     private void compileNumericalExpression()
     {

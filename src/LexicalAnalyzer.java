@@ -153,7 +153,7 @@ public class LexicalAnalyzer
 
     public boolean isNumericalOperator(String op)
     {
-        return op.matches("\\+\\+|--|<<|>>|[\\-+/*^%]=|[\\[\\]+/*\\-^%;]");
+        return op.matches("\\+\\+|--|<<|>>|[\\-+/*^%]=|[\\[\\]+/*\\-^%]");
     }
 
     public boolean isBooleanOperator(String op)

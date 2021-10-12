@@ -1,9 +1,3 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.stream.Collectors;
-
 public class Practice
 {
     public static void main(String[] args) throws SyntaxErrorException
@@ -13,6 +7,6 @@ public class Practice
 //        {
 //            System.out.println(s.lexemes.get(i) + " -> " + s.tokens.get(i));
 //        }
-        SyntaxAnalyzer n = new SyntaxAnalyzer("test2.txt");
+        SyntaxAnalyzer n = new SyntaxAnalyzer("test1.txt");
     }
 }

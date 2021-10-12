@@ -15,7 +15,9 @@ public class SymbolTable
     private void addOperators()
     {
         symbolTable.put("+", "numerical operator");
+        symbolTable.put("++", "numerical operator");
         symbolTable.put("-", "numerical operator");
+        symbolTable.put("--", "numerical operator");
         symbolTable.put("*", "numerical operator");
         symbolTable.put("/", "numerical operator");
         symbolTable.put("%", "numerical operator");
@@ -24,6 +26,10 @@ public class SymbolTable
         symbolTable.put("*=", "numerical operator");
         symbolTable.put("/=", "numerical operator");
         symbolTable.put("%=", "numerical operator");
+        symbolTable.put("<<", "numerical operator");
+        symbolTable.put(">>", "numerical operator");
+        symbolTable.put("^", "numerical operator");
+        symbolTable.put("^=", "numerical operator");
         symbolTable.put("==", "boolean operator");
         symbolTable.put("!=", "boolean operator");
         symbolTable.put(">", "boolean operator");
