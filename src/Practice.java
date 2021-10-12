@@ -7,6 +7,7 @@ public class Practice
 //        {
 //            System.out.println(s.lexemes.get(i) + " -> " + s.tokens.get(i));
 //        }
-        SyntaxAnalyzer n = new SyntaxAnalyzer("test1.txt");
+        SyntaxAnalyzer n = new SyntaxAnalyzer("test_err3.txt");
+        n.compileWhile();
     }
 }

@@ -7,15 +7,29 @@ public class SyntaxAnalyzer
     public SyntaxAnalyzer(String filename) throws SyntaxErrorException
     {
         lex = new LexicalAnalyzer(filename);
-        compileWhile();
     }
 
-    private void compileWhile() throws SyntaxErrorException
+    public void compileWhile() throws SyntaxErrorException
     {
         match("while");
         match("(");
         compileCondition();
         match(")");
+        if(lex.hasMoreLexeme())
+        {
+            if(lex.contains("{"))
+            {
+                if(!lex.contains("}"))
+                {
+                    throw new SyntaxErrorException("} is expected");
+                }
+            }
+            System.out.println("Valid while loop statement");
+        }
+        else
+        {
+            throw new SyntaxErrorException("Statement expected");
+        }
     }
 
     private void compileCondition() throws SyntaxErrorException
@@ -29,13 +43,8 @@ public class SyntaxAnalyzer
             }
             else
             {
-                if(lex.currentLexeme().equals("("))
-                {
-                    lex.next();
-                    compileBooleanExpression();
-                    match(")");
-                }
-                else
+                boolean isCondition = compileExpression();
+                if(!isCondition)
                 {
                     throw new SyntaxErrorException("Cannot apply ! operator to " + lex.getTokenType());
                 }
@@ -73,9 +82,20 @@ public class SyntaxAnalyzer
 
     private boolean compileExpression() throws SyntaxErrorException
     {
+        String type = lex.getTokenType();
         boolean isBoolean = compileTerm();
+
         while(lex.getTokenType().equals("numerical operator") || lex.getTokenType().equals("boolean operator"))
         {
+            String nextType = lex.getNextTokenType(1);
+            if(lex.currentLexeme().equals("!") && (!nextType.equals("boolean")) && !isBoolean)
+            {
+                throw new SyntaxErrorException("Cannot apply ! operator to " + nextType);
+            }
+            else if((type.equals("boolean") || nextType.equals("boolean") || type.equals("String") || nextType.equals("String")) && !lex.currentLexeme().equals("!"))
+            {
+                throw new SyntaxErrorException("The operator " + lex.currentLexeme() + " cannot be applied to the " + type + " " + nextType);
+            }
             if(!isBoolean && lex.getTokenType().equals("boolean operator"))
             {
                 isBoolean = true;
@@ -92,8 +112,8 @@ public class SyntaxAnalyzer
 
     private boolean compileTerm() throws SyntaxErrorException
     {
-        boolean truthy = false;
         String type = lex.getTokenType();
+        boolean truthy = false;
 
         if(type.equals("int") || type.equals("char") || type.equals("double"))
         {
@@ -104,13 +124,14 @@ public class SyntaxAnalyzer
             lex.next();
             truthy = compileExpression();
             match(")");
+
         }
         else if(lex.getTokenType().equals("boolean"))
         {
-            lex.next();
             truthy = true;
+            lex.next();
         }
-        return  truthy;
+        return truthy;
     }
 
     private void compileNumericalExpression()

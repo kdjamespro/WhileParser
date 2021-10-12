@@ -132,11 +132,6 @@ public class LexicalAnalyzer
         }
     }
 
-    public ArrayList<String> getLexemes()
-    {
-        return (ArrayList<String>) tokens.clone();
-    }
-
     private boolean isInteger(String num)
     {
         if(num.contains("."))
@@ -159,11 +154,6 @@ public class LexicalAnalyzer
     public boolean isBooleanOperator(String op)
     {
         return op.matches("!|<|<=|>|>=|==|!=");
-    }
-
-    private boolean isLogicalOperator(String op)
-    {
-        return op.matches("\\|[|]?|&[&]?");
     }
 
     private boolean isString(String s)
@@ -238,9 +228,8 @@ public class LexicalAnalyzer
         return var.getValue(identifier);
     }
 
-    public boolean isOperator()
+    public boolean contains(String item)
     {
-        return getTokenType().equals("numerical operator") || getTokenType().equals("boolean operator");
+        return lexemes.contains(item);
     }
-
 }
