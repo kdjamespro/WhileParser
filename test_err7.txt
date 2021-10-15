@@ -1,0 +1,4 @@
+while(true)
+{
+    int 23ab;
+}
