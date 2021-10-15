@@ -35,7 +35,12 @@ public class LexicalAnalyzer
                 {
                     String lexeme = s.get(i);
 
-                    if(i < s.size() - 1 && (isNumericalOperator(lexeme) || isBooleanOperator(lexeme))&& s.get(i+1).equals("="))
+                    if(lexeme.matches("\\p{IsWhiteSpace}"))
+                    {
+                        continue;
+                    }
+
+                    if(i < s.size() - 1 && (isNumericalOperator(lexeme) || isBooleanOperator(lexeme) || isAssignment(lexeme))&& s.get(i+1).equals("="))
                     {
                         i += 1;
                         lexeme += s.get(i);
@@ -79,11 +84,6 @@ public class LexicalAnalyzer
                         {
                             throw new SyntaxErrorException("Line " + lineNumber + ": " + identifier + " is an invalid identifier name.");
                         }
-                    }
-
-                    if(lexeme.matches("\\p{IsWhiteSpace}"))
-                    {
-                        continue;
                     }
 
                     if(symbols.contains(lexeme))
@@ -175,6 +175,11 @@ public class LexicalAnalyzer
     {
         return datatype.equals("String") || datatype.equals("int") || datatype.equals("double") || datatype.equals("boolean")
                 || datatype.equals("char");
+    }
+
+    private boolean isAssignment(String op)
+    {
+        return op.matches("=");
     }
 
     public String currentLexeme()

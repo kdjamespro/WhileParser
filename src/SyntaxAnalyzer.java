@@ -17,14 +17,19 @@ public class SyntaxAnalyzer
         match(")");
         if(lex.hasMoreLexeme())
         {
-            if(lex.contains("{"))
+            String nextLexeme = lex.currentLexeme();
+            if(nextLexeme.equals("{"))
             {
                 if(!lex.contains("}"))
                 {
                     throw new SyntaxErrorException("} is expected");
                 }
+                System.out.println("Valid while loop statement");
             }
-            System.out.println("Valid while loop statement");
+            else if(nextLexeme.equals(";"))
+            {
+                throw new SyntaxErrorException("Unreachable Statement");
+            }
         }
         else
         {
@@ -36,6 +41,10 @@ public class SyntaxAnalyzer
     {
         if(lex.currentLexeme().equals("!"))
         {
+            while(lex.currentLexeme().equals("!") && lex.lookAhead(1).equals("!"))
+            {
+                lex.next();
+            }
             lex.next();
             if(lex.getTokenType().equals("boolean"))
             {
@@ -92,7 +101,7 @@ public class SyntaxAnalyzer
             {
                 throw new SyntaxErrorException("Cannot apply ! operator to " + nextType);
             }
-            else if((type.equals("boolean") || nextType.equals("boolean") || type.equals("String") || nextType.equals("String")) && !lex.currentLexeme().equals("!"))
+            else if((!isNumericalValues(type, nextType) && !isSymbol(type, nextType))&&  lex.getTokenType().equals("numerical operator"))
             {
                 throw new SyntaxErrorException("The operator " + lex.currentLexeme() + " cannot be applied to the " + type + " " + nextType);
             }
@@ -102,7 +111,10 @@ public class SyntaxAnalyzer
             }
             else if(isBoolean && lex.getTokenType().equals("boolean operator"))
             {
-                throw new SyntaxErrorException("The operator " + lex.currentLexeme() + " cannot be applied to the expression");
+                if(!lex.currentLexeme().equals("=="))
+                {
+                    throw new SyntaxErrorException("The operator " + lex.currentLexeme() + " cannot be applied to the expression");
+                }
             }
             lex.next();
             compileTerm();
@@ -134,20 +146,6 @@ public class SyntaxAnalyzer
         return truthy;
     }
 
-    private void compileNumericalExpression()
-    {
-        do
-        {
-            String left = lex.currentLexeme();
-            lex.next();
-            String op = lex.currentLexeme();
-            lex.next();
-
-        }while(lex.lookAhead(1).matches("\\+ | - | * | /"));
-
-    }
-
-
     private void match(String word) throws  SyntaxErrorException
     {
         if(!lex.currentLexeme().equals(word))
@@ -157,43 +155,23 @@ public class SyntaxAnalyzer
         lex.next();
     }
 
-    private boolean isDatatype()
+    private boolean isNumericalValues(String type, String nextType)
     {
-        String currentLex = lex.currentLexeme();
-        return currentLex.equals("int") || currentLex.equals("double") || currentLex.equals("String") || currentLex.equals("char")
-                || currentLex.equals("boolean");
-    }
-
-    private boolean isNumericalExpression()
-    {
-       String nextTokenType = lex.getNextTokenType(1);
-       String currTokenType = lex.getTokenType();
-
-       if(nextTokenType.equals("numerical operator"))
-       {
-           if(currTokenType.equals("int") || currTokenType.equals("double"))
-           {
+        if(type.equals("int") || type.equals("double") || type.equals("char"))
+        {
+            if(nextType.equals("int") || nextType.equals("double") || nextType.equals("char"))
+            {
                 return true;
-           }
-           else if(currTokenType.equals("identifier"))
-           {
-               if(isIdNumber())
-               {
-                    return true;
-               }
-           }
-       }
-       else if(currTokenType.equals("numerical operator"))
-       {
-
-       }
-       return false;
-    }
-
-    private boolean isBooleanExpression()
-    {
+            }
+        }
         return false;
     }
+
+    private boolean isSymbol(String type, String nextType)
+    {
+        return type.equals("symbol") || nextType.equals("symbol");
+    }
+
 
     private boolean isIdNumber()
     {

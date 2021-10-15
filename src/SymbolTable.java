@@ -21,6 +21,7 @@ public class SymbolTable
         symbolTable.put("*", "numerical operator");
         symbolTable.put("/", "numerical operator");
         symbolTable.put("%", "numerical operator");
+        symbolTable.put("=", "assignment operator");
         symbolTable.put("+=", "numerical operator");
         symbolTable.put("-=", "numerical operator");
         symbolTable.put("*=", "numerical operator");
