@@ -101,9 +101,23 @@ public class SyntaxAnalyzer
             {
                 throw new SyntaxErrorException("Cannot apply ! operator to " + nextType);
             }
-            else if((!isNumericalValues(type, nextType) && !isSymbol(type, nextType))&&  lex.getTokenType().equals("numerical operator"))
+            else if(bothString(type, nextType))
+            {
+                if(!lex.currentLexeme().equals("==") && !lex.currentLexeme().equals("!="))
+                {
+                    throw new SyntaxErrorException("The operator " + lex.currentLexeme() + " cannot be applied to the " + type + " " + nextType);
+                }
+            }
+            else if((!isNumericalValues(type, nextType) && !isSymbol(type, nextType))&&  (lex.getTokenType().equals("numerical operator") || lex.getTokenType().equals("boolean operator")))
             {
                 throw new SyntaxErrorException("\n\tGROUP 8 DEBUGGER: The operator " + lex.currentLexeme() + " cannot be applied to the " + type + " " + nextType +"\n");
+            }
+            else if((type.equals("String") || nextType.equals("String")) && bothString(type, nextType))
+            {
+                if(!lex.currentLexeme().equals("==") || !lex.currentLexeme().equals("!="))
+                {
+                    throw new SyntaxErrorException("The operator " + lex.currentLexeme() + " cannot be applied to the expression");
+                }
             }
             if(!isBoolean && lex.getTokenType().equals("boolean operator"))
             {
@@ -111,9 +125,9 @@ public class SyntaxAnalyzer
             }
             else if(isBoolean && lex.getTokenType().equals("boolean operator"))
             {
-                if(!lex.currentLexeme().equals("=="))
+                if(!lex.currentLexeme().equals("==") && !lex.currentLexeme().equals("!="))
                 {
-                    throw new SyntaxErrorException("\n\tGROUP 8 DEBUGGER: The operator " + lex.currentLexeme() + " cannot be applied to the expression\n");
+                    throw new SyntaxErrorException("\n\tGROUP 8 DEBUGGER: The operator " + lex.currentLexeme() + " cannot be applied to boolean" + "and " + nextType);
                 }
             }
             lex.next();
@@ -141,6 +155,10 @@ public class SyntaxAnalyzer
         else if(lex.getTokenType().equals("boolean"))
         {
             truthy = true;
+            lex.next();
+        }
+        else if(lex.getTokenType().equals("string"))
+        {
             lex.next();
         }
         return truthy;
@@ -172,12 +190,8 @@ public class SyntaxAnalyzer
         return type.equals("symbol") || nextType.equals("symbol");
     }
 
-
-    private boolean isIdNumber()
+    private boolean bothString(String type, String nextType)
     {
-        String type = lex.getIdentifierDataType(lex.currentLexeme());
-        return type.equals("int") || type.equals("double");
+        return type.equals("string") && nextType.equals("string");
     }
-
-
 }

@@ -4,7 +4,7 @@ public class WhileParser
     {
         try
         {
-            SyntaxAnalyzer n = new SyntaxAnalyzer("test_err1.txt");
+            SyntaxAnalyzer n = new SyntaxAnalyzer("test10.txt");
             n.compileWhile();
         }
         catch(SyntaxErrorException e)
