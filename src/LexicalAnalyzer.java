@@ -1,6 +1,4 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,7 +14,7 @@ public class LexicalAnalyzer
     private final VariableTable var = new VariableTable();
     private int num;
 
-    public LexicalAnalyzer(String fileName)
+    public LexicalAnalyzer(String fileName) throws SyntaxErrorException
     {
         lexemes = new ArrayList<>();
         tokens = new ArrayList<>();
@@ -25,17 +23,18 @@ public class LexicalAnalyzer
         {
             String line;
 
-            while((line = read.readLine().trim()) != null)
+            while((line = read.readLine()) != null)
             {
+                line = line.trim();
                 lineNumber += 1;
-                List<String> s = Collections.list(new StringTokenizer(line, " \n[(+-*/%=;&|.!)", true)).stream()
+                List<String> s = Collections.list(new StringTokenizer(line, " \n[(+-*/%=;&|.!><)", true)).stream()
                         .map(token -> (String) token).collect(Collectors.toList());
 
                 for(int i = 0; i < s.size(); i++)
                 {
-                    String lexeme = s.get(i);
+                    String lexeme = s.get(i).trim();
 
-                    if(lexeme.matches("\\p{IsWhiteSpace}"))
+                    if(lexeme.matches("\\p{IsWhiteSpace}") || lexeme.equals(""))
                     {
                         continue;
                     }
@@ -45,7 +44,7 @@ public class LexicalAnalyzer
                         i += 1;
                         lexeme += s.get(i);
                     }
-                    else if(i < s.size() - 1 && (lexeme.equals("+") || lexeme.equals("-")) && s.get(i + 1).equals(lexeme))
+                    else if(i < s.size() - 1 && (lexeme.equals("+") || lexeme.equals("-") || lexeme.equals("<") || lexeme.equals(">"))&& s.get(i + 1).equals(lexeme))
                     {
                         i += 1;
                         lexeme += s.get(i);
@@ -104,6 +103,20 @@ public class LexicalAnalyzer
                     }
                     else if(isString(lexeme))
                     {
+                        if(!(lexeme.charAt(lexeme.length() - 1) == '\"'))
+                        {
+                            while(i < s.size() - 2 && s.get(i + 2).charAt(s.get(i + 2).length() - 1) != '\"')
+                            {
+                                String p1 = lexeme.replaceAll("\"", "");
+                                String p2 = s.get(i + 2).replaceAll("\"", "");
+                                lexeme = "\"" + p1 + " " + p2 + "\"";
+                                i += 2;
+                            }
+                            String p1 = lexeme.replaceAll("\"", "");
+                            String p2 = s.get(i + 2).replaceAll("\"", "");
+                            lexeme = "\"" + p1 + " " + p2 + "\"";
+                            i += 2;
+                        }
                         if(lexeme.charAt(0) == '\"' && lexeme.charAt(lexeme.length() - 1) == '\"')
                         {
                             tokens.add("string");
@@ -126,7 +139,7 @@ public class LexicalAnalyzer
             }
         }
 
-        catch(Exception e)
+        catch(IOException e)
         {
             e.getMessage();
         }
