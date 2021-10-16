@@ -74,21 +74,6 @@ public class SyntaxAnalyzer
         }
     }
 
-    private void compileBooleanExpression() throws SyntaxErrorException
-    {
-        compileExpression();
-        if(lex.currentLexeme().equals(")"))
-        {
-            throw new SyntaxErrorException("This expression does not evaluate to boolean", lex.getLineNumber());
-        }
-        if(!lex.getTokenType().equals("boolean operator"))
-        {
-            throw new SyntaxErrorException("Expected a boolean operator but got " + lex.currentLexeme(), lex.getLineNumber());
-        }
-        lex.next();
-        compileExpression();
-    }
-
     private boolean compileExpression() throws SyntaxErrorException
     {
         String type = lex.getTokenType();
