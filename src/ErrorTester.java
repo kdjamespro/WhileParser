@@ -74,5 +74,14 @@ public class ErrorTester
         {
             e.getMessage();
         }
+        try
+        {
+            SyntaxAnalyzer n = new SyntaxAnalyzer("test_err9.txt");
+            n.compileWhile();
+        }
+        catch(SyntaxErrorException e)
+        {
+            e.getMessage();
+        }
     }
 }

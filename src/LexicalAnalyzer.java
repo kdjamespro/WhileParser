@@ -29,7 +29,7 @@ public class LexicalAnalyzer
             {
                 line = line.trim();
                 lineNumber += 1;
-                List<String> s = Collections.list(new StringTokenizer(line, " \n[(+-*/%=;&|.!><)", true)).stream()
+                List<String> s = Collections.list(new StringTokenizer(line, " \n[(+-*/%=;&|!><)", true)).stream()
                         .map(token -> (String) token).collect(Collectors.toList());
 
                 for(int i = 0; i < s.size(); i++)
@@ -86,7 +86,6 @@ public class LexicalAnalyzer
                             throw new SyntaxErrorException(identifier + " is an invalid identifier name.", lineNumber);
                         }
                     }
-
                     if(symbols.contains(lexeme))
                     {
                         tokens.add(symbols.getValue(lexeme));
@@ -128,9 +127,13 @@ public class LexicalAnalyzer
                             throw new SyntaxErrorException("Unclosed quotation mark (\")", lineNumber);
                         }
                     }
-                    else if (isIdentifier(lexeme))
+                    else if(isIdentifier(lexeme))
                     {
                         tokens.add("identifier");
+                    }
+                    else if(isMethod(lexeme))
+                    {
+                        tokens.add("methods");
                     }
                     else
                     {
@@ -196,6 +199,15 @@ public class LexicalAnalyzer
     private boolean isAssignment(String op)
     {
         return op.matches("=");
+    }
+
+    private boolean isMethod(String method)
+    {
+        if(method.contains("."))
+        {
+            return method.split("\\.").length > 2;
+        }
+        return false;
     }
 
     public String currentLexeme()
@@ -265,6 +277,14 @@ public class LexicalAnalyzer
 
     public int getLineNumber(String lexeme)
     {
-        return lineNumbers.get(lexemes.indexOf(lexeme));
+        int index = lexemes.indexOf(lexeme);
+        if(index < 0)
+        {
+            return getLineNumber();
+        }
+        else
+        {
+            return lineNumbers.get(lexemes.indexOf(lexeme));
+        }
     }
 }
