@@ -10,12 +10,14 @@ public class LexicalAnalyzer
     private int lineNumber;
     private final ArrayList<String> tokens;
     private final ArrayList<String> lexemes;
+    private final ArrayList<Integer> lineNumbers;
     private final SymbolTable symbols = new SymbolTable();
     private final VariableTable var = new VariableTable();
     private int num;
 
     public LexicalAnalyzer(String fileName) throws SyntaxErrorException
     {
+        lineNumbers = new ArrayList<>();
         lexemes = new ArrayList<>();
         tokens = new ArrayList<>();
         num = 0;
@@ -72,7 +74,7 @@ public class LexicalAnalyzer
                         {
                             if(var.contains(identifier))
                             {
-                                throw new SyntaxErrorException("Line " + lineNumber + ": " + identifier + " Identifier is already defined.");
+                                throw new SyntaxErrorException(identifier + " Identifier is already defined.", lineNumber);
                             }
                             else
                             {
@@ -81,7 +83,7 @@ public class LexicalAnalyzer
                         }
                         else
                         {
-                            throw new SyntaxErrorException("Line " + lineNumber + ": " + identifier + " is an invalid identifier name.");
+                            throw new SyntaxErrorException(identifier + " is an invalid identifier name.", lineNumber);
                         }
                     }
 
@@ -123,7 +125,7 @@ public class LexicalAnalyzer
                         }
                         else
                         {
-                            throw new SyntaxErrorException("Line " + lineNumber + ": "+ "Unclosed quotation mark (\")");
+                            throw new SyntaxErrorException("Unclosed quotation mark (\")", lineNumber);
                         }
                     }
                     else if (isIdentifier(lexeme))
@@ -132,9 +134,10 @@ public class LexicalAnalyzer
                     }
                     else
                     {
-                        throw new SyntaxErrorException("Line " + lineNumber + ": " + lexeme + " unexpected token.");
+                        throw new SyntaxErrorException(lexeme + " unexpected token.", lineNumber);
                     }
                     lexemes.add(lexeme);
+                    lineNumbers.add(lineNumber);
                 }
             }
         }
@@ -249,5 +252,19 @@ public class LexicalAnalyzer
     public boolean contains(String item)
     {
         return lexemes.contains(item);
+    }
+
+    public int getLineNumber()
+    {
+        if(hasMoreLexeme())
+        {
+            return lineNumbers.get(num);
+        }
+        return lineNumbers.get(num - 1);
+    }
+
+    public int getLineNumber(String lexeme)
+    {
+        return lineNumbers.get(lexemes.indexOf(lexeme));
     }
 }

@@ -1,8 +1,8 @@
 public class SyntaxErrorException extends Exception
 {
-    public SyntaxErrorException(String message)
+    public SyntaxErrorException(String message, int lineNumber)
     {
-        super(message);
+        super("\n\tGROUP 8 DEBUGGER: Line " + lineNumber + ": "  + message + "\n");
         System.err.println(this);
     }
 }

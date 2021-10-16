@@ -22,18 +22,18 @@ public class SyntaxAnalyzer
             {
                 if(!lex.contains("}"))
                 {
-                    throw new SyntaxErrorException("} is expected");
+                    throw new SyntaxErrorException("} is expected", lex.getLineNumber("}"));
                 }
-                System.out.println("\tGROUP 8 DEBUGGER: Valid while loop statement");
+                System.out.println("\n\tGROUP 8 DEBUGGER: Valid while loop statement");
             }
             else if(nextLexeme.equals(";"))
             {
-                throw new SyntaxErrorException("\n\tGROUP 8 DEBUGGER: Unreachable Statement\n");
+                throw new SyntaxErrorException("Unreachable Statement", lex.getLineNumber(";"));
             }
         }
         else
         {
-            throw new SyntaxErrorException("\n\tGROUP 8 DEBUGGER: Statement expected\n");
+            throw new SyntaxErrorException("Statement expected", lex.getLineNumber());
         }
     }
 
@@ -55,7 +55,7 @@ public class SyntaxAnalyzer
                 boolean isCondition = compileExpression();
                 if(!isCondition)
                 {
-                    throw new SyntaxErrorException("Cannot apply ! operator to " + lex.getTokenType());
+                    throw new SyntaxErrorException("Cannot apply ! operator to " + lex.getTokenType(), lex.getLineNumber());
                 }
             }
         }
@@ -64,7 +64,7 @@ public class SyntaxAnalyzer
             boolean isCondition = compileExpression();
             if(!isCondition)
             {
-                throw new SyntaxErrorException("This expression does not evaluate to boolean value");
+                throw new SyntaxErrorException("This expression does not evaluate to boolean value", lex.getLineNumber());
             }
         }
         if(lex.getTokenType().equals("logical operator"))
@@ -79,11 +79,11 @@ public class SyntaxAnalyzer
         compileExpression();
         if(lex.currentLexeme().equals(")"))
         {
-            throw new SyntaxErrorException("This expression does not evaluate to boolean");
+            throw new SyntaxErrorException("This expression does not evaluate to boolean", lex.getLineNumber());
         }
         if(!lex.getTokenType().equals("boolean operator"))
         {
-            throw new SyntaxErrorException("Expected a boolean operator but got " + lex.currentLexeme());
+            throw new SyntaxErrorException("Expected a boolean operator but got " + lex.currentLexeme(), lex.getLineNumber());
         }
         lex.next();
         compileExpression();
@@ -94,29 +94,32 @@ public class SyntaxAnalyzer
         String type = lex.getTokenType();
         boolean isBoolean = compileTerm();
 
-        while(lex.getTokenType().equals("numerical operator") || lex.getTokenType().equals("boolean operator"))
+        while(isOperator(lex.currentLexeme()))
         {
             String nextType = lex.getNextTokenType(1);
             if(lex.currentLexeme().equals("!") && (!nextType.equals("boolean")) && !isBoolean)
             {
-                throw new SyntaxErrorException("Cannot apply ! operator to " + nextType);
+                throw new SyntaxErrorException("Cannot apply ! operator to " + nextType, lex.getLineNumber());
             }
             else if(bothString(type, nextType))
             {
                 if(!lex.currentLexeme().equals("==") && !lex.currentLexeme().equals("!="))
                 {
-                    throw new SyntaxErrorException("The operator " + lex.currentLexeme() + " cannot be applied to the " + type + " " + nextType);
+                    throw new SyntaxErrorException("The operator " + lex.currentLexeme() + " cannot be applied to the " + type + " " + nextType, lex.getLineNumber());
                 }
             }
-            else if((!isNumericalValues(type, nextType) && !isSymbol(type, nextType))&&  (lex.getTokenType().equals("numerical operator") || lex.getTokenType().equals("boolean operator")))
+            else if((!isNumericalValues(type, nextType) && !isSymbol(type, nextType)) &&  isOperator(lex.currentLexeme()) && !lex.currentLexeme().equals("!"))
             {
-                throw new SyntaxErrorException("\n\tGROUP 8 DEBUGGER: The operator " + lex.currentLexeme() + " cannot be applied to the " + type + " " + nextType +"\n");
+                if(!(type.equals("boolean") && nextType.equals("boolean")))
+                {
+                    throw new SyntaxErrorException("The operator " + lex.currentLexeme() + " cannot be applied to the " + type + " " + nextType, lex.getLineNumber());
+                }
             }
             else if((type.equals("String") || nextType.equals("String")) && bothString(type, nextType))
             {
                 if(!lex.currentLexeme().equals("==") || !lex.currentLexeme().equals("!="))
                 {
-                    throw new SyntaxErrorException("The operator " + lex.currentLexeme() + " cannot be applied to the expression");
+                    throw new SyntaxErrorException("The operator " + lex.currentLexeme() + " cannot be applied to the expression", lex.getLineNumber());
                 }
             }
             if(!isBoolean && lex.getTokenType().equals("boolean operator"))
@@ -127,7 +130,7 @@ public class SyntaxAnalyzer
             {
                 if(!lex.currentLexeme().equals("==") && !lex.currentLexeme().equals("!="))
                 {
-                    throw new SyntaxErrorException("\n\tGROUP 8 DEBUGGER: The operator " + lex.currentLexeme() + " cannot be applied to boolean" + "and " + nextType);
+                    throw new SyntaxErrorException("The operator " + lex.currentLexeme() + " cannot be applied to boolean " + "and " + nextType, lex.getLineNumber());
                 }
             }
             lex.next();
@@ -168,7 +171,7 @@ public class SyntaxAnalyzer
     {
         if(!lex.currentLexeme().equals(word))
         {
-            throw new SyntaxErrorException("\n\tGROUP 8 DEBUGGER: Expecting " + word + " but the input is " + lex.currentLexeme() + "\n");
+            throw new SyntaxErrorException("Expecting " + word + " but the input is " + lex.currentLexeme(), lex.getLineNumber());
         }
         lex.next();
     }
@@ -193,5 +196,10 @@ public class SyntaxAnalyzer
     private boolean bothString(String type, String nextType)
     {
         return type.equals("string") && nextType.equals("string");
+    }
+
+    private boolean isOperator(String op)
+    {
+        return lex.getTokenType().equals("numerical operator") || lex.getTokenType().equals("boolean operator");
     }
 }
