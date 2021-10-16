@@ -24,16 +24,16 @@ public class SyntaxAnalyzer
                 {
                     throw new SyntaxErrorException("} is expected");
                 }
-                System.out.println("Valid while loop statement");
+                System.out.println("\tGROUP 8 DEBUGGER: Valid while loop statement");
             }
             else if(nextLexeme.equals(";"))
             {
-                throw new SyntaxErrorException("Unreachable Statement");
+                throw new SyntaxErrorException("\n\tGROUP 8 DEBUGGER: Unreachable Statement\n");
             }
         }
         else
         {
-            throw new SyntaxErrorException("Statement expected");
+            throw new SyntaxErrorException("\n\tGROUP 8 DEBUGGER: Statement expected\n");
         }
     }
 
@@ -103,7 +103,7 @@ public class SyntaxAnalyzer
             }
             else if((!isNumericalValues(type, nextType) && !isSymbol(type, nextType))&&  lex.getTokenType().equals("numerical operator"))
             {
-                throw new SyntaxErrorException("The operator " + lex.currentLexeme() + " cannot be applied to the " + type + " " + nextType);
+                throw new SyntaxErrorException("\n\tGROUP 8 DEBUGGER: The operator " + lex.currentLexeme() + " cannot be applied to the " + type + " " + nextType +"\n");
             }
             if(!isBoolean && lex.getTokenType().equals("boolean operator"))
             {
@@ -113,7 +113,7 @@ public class SyntaxAnalyzer
             {
                 if(!lex.currentLexeme().equals("=="))
                 {
-                    throw new SyntaxErrorException("The operator " + lex.currentLexeme() + " cannot be applied to the expression");
+                    throw new SyntaxErrorException("\n\tGROUP 8 DEBUGGER: The operator " + lex.currentLexeme() + " cannot be applied to the expression\n");
                 }
             }
             lex.next();
@@ -150,7 +150,7 @@ public class SyntaxAnalyzer
     {
         if(!lex.currentLexeme().equals(word))
         {
-            throw new SyntaxErrorException(" Expecting " + word + " but the input is " + lex.currentLexeme());
+            throw new SyntaxErrorException("\n\tGROUP 8 DEBUGGER: Expecting " + word + " but the input is " + lex.currentLexeme() + "\n");
         }
         lex.next();
     }
