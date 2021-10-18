@@ -2,4 +2,4 @@ bool x;
 
 while(x == true){
 
-{
+}

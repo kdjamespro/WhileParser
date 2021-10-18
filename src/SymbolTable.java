@@ -54,7 +54,6 @@ public class SymbolTable
         symbolTable.put("boolean", "keyword");
         symbolTable.put("true", "boolean");
         symbolTable.put("false", "boolean");
-
     }
 
     private void addSymbols()

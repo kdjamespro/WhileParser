@@ -1,3 +1,4 @@
-while(((1 > 4))|| !(3 < 5)){
-    System.out.print("Hello World");
+while(((1 > 4)) && !(3 < 5)){
+   System.out.print("Hello World");
 }
+

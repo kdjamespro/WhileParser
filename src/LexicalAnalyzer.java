@@ -24,7 +24,6 @@ public class LexicalAnalyzer
         try(BufferedReader read = new BufferedReader(new FileReader(new File(fileName))))
         {
             String line;
-
             while((line = read.readLine()) != null)
             {
                 line = line.trim();
@@ -56,7 +55,7 @@ public class LexicalAnalyzer
                         i += 1;
                         lexeme += s.get(i);
                     }
-                    else if(i < s.size() - 1 && lexeme.equals("&") && s.get(i+1).equals("&&"))
+                    else if(i < s.size() - 1 && lexeme.equals("&") && s.get(i+1).equals("&"))
                     {
                         i += 1;
                         lexeme += s.get(i);
@@ -144,7 +143,6 @@ public class LexicalAnalyzer
                 }
             }
         }
-
         catch(IOException e)
         {
             e.getMessage();
